@@ -23,14 +23,14 @@ long long get_time(){
 	return std::chrono::duration_cast<std::chrono::milliseconds>(epoch).count();
 }
 
-void print_offset_changes(long long** pair_offset, std::vector<long long> nums, int world_size, int round){
+void print_offset_changes(long long** pair_offset, std::vector<long long> nums, int world_rank, int world_size, int round){
 	long long diff;
 	for (int i=0 ; i<world_size ; i++){
 		for (int j=i+1 ; j<world_size ; j++){
 			diff = nums[i] - nums[j];
 			if (pair_offset[i][j] == NULL) pair_offset[i][j] = diff;
 			if (pair_offset[i][j] != diff){
-				std::cout << "[" << round << "] [" << i << "][" << j << "] diff = " << pair_offset[i][j] - diff << std::endl;
+				std::cout << "[" << world_rank << "][" << round << "] [" << i << "][" << j << "] diff = " << pair_offset[i][j] - diff << std::endl;
 				pair_offset[i][j] = diff;
 			}
 
@@ -49,7 +49,7 @@ int main(int argc, char** argv) {
 
 	char hostname[1024];
 	gethostname(hostname, 1024);
-	std::cout << "[" << world_rank << "] hostname = " << hostname << std::endl;
+	std::cout << "[" << world_rank << " of "<< world_size <<"] hostname = " << hostname << std::endl;
 
 	long long** pair_offset = NULL;
 	if (world_rank == 0) {
@@ -87,9 +87,9 @@ int main(int argc, char** argv) {
 			std::vector<long long> sorted (nums);
 			std::sort(sorted.begin(), sorted.end());
 
-			std::cout << "[" << count << "] Min index is " << std::distance(nums.begin(), std::find(nums.begin(), nums.end(), sorted[0])) << " in ms and max time is " << std::distance(nums.begin(), std::find(nums.begin(), nums.end(), sorted[sorted.size()-1]))<< " in ms and the diff between max and min is " << (sorted[sorted.size()-1] - sorted[0])/1000.0 << " s "<< std::endl;
+			std::cout << "[" << world_rank << "][" << count << "] Min index is " << std::distance(nums.begin(), std::find(nums.begin(), nums.end(), sorted[0])) << " in ms and max time is " << std::distance(nums.begin(), std::find(nums.begin(), nums.end(), sorted[sorted.size()-1]))<< " in ms and the diff between max and min is " << (sorted[sorted.size()-1] - sorted[0])/1000.0 << " s "<< std::endl;
 
-			print_offset_changes(pair_offset, nums, world_size, count);
+			print_offset_changes(pair_offset, nums, world_rank, world_size, count);
 
 		}
 		// Clean up
