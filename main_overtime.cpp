@@ -33,9 +33,8 @@ int main(int argc, char** argv) {
 	int world_size;
 	MPI_Comm_size(MPI_COMM_WORLD, &world_size);
 
-	char hostname[1024];
-	gethostname(hostname, 1024);
-	std::cout << "[" << world_rank << " of "<< world_size <<"] hostname = " << hostname << std::endl;
+	if (world_rank == 0)
+		std::cout << "[" << world_rank << " of "<< world_size <<"]" << std::endl;
 
 	std::vector<uint64_t> times;
 
@@ -52,10 +51,12 @@ int main(int argc, char** argv) {
 		long long local_time = get_time() - global_local_time;
 		times.push_back(local_time);
 	}
-	std::ofstream out(world_rank+".txt");
+	if (world_rank == 0)std::cout << "Logging ...\n";
+
+	std::ofstream out(std::to_string(world_rank)+".txt");
 
 	out << world_rank << "/" << world_size;
-	for (int i=0 ; i<times.size() ; i++){
+	for (size_t i=0 ; i<times.size() ; i++){
 		out << "\t\t" << times[i];
 	}
 	out << "\n";
