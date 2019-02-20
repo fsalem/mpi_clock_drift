@@ -53,16 +53,13 @@ int main(int argc, char** argv) {
 		times.push_back(local_time);
 	}
 	std::ofstream out(world_rank+".txt");
-	std::streambuf *coutbuf = std::cout.rdbuf(); //save old buf
-	std::cout.rdbuf(out.rdbuf()); //redirect std::cout to out.txt!
 
-	std::cout << world_rank << "/" << world_size;
+	out << world_rank << "/" << world_size;
 	for (int i=0 ; i<times.size() ; i++){
-		std::cout << "\t\t" << times[i];
+		out << "\t\t" << times[i];
 	}
-	std::cout << "\n";
+	out << "\n";
 	out.flush();
-	std::cout.rdbuf(coutbuf); //reset to standard output again
 	out.close();
 
 	MPI_Barrier(MPI_COMM_WORLD);
