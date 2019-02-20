@@ -33,14 +33,17 @@ int main(int argc, char** argv) {
 	int world_size;
 	MPI_Comm_size(MPI_COMM_WORLD, &world_size);
 
-	if (world_rank == 0)
-		std::cout << "[" << world_rank << " of "<< world_size <<"]" << std::endl;
+	char hostname[1024];
+	gethostname(hostname, 1024);
+	//if (world_rank == 0)
+		std::cout << "[" << world_rank << " of "<< world_size <<"] hostname " << hostname << std::endl;
 
 	std::vector<uint64_t> times;
 
 	int rc = MPI_Barrier(MPI_COMM_WORLD);
 	assert(rc == MPI_SUCCESS);
 	long long global_local_time = get_time();
+	times.push_back(global_local_time);
 	times.push_back(0);
 
 	int count = 0;
