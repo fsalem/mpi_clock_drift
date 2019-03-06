@@ -9,7 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include <mpich/mpi.h>
+#include <mpi.h>
 #include <assert.h>
 #include <chrono>
 #include <vector>
